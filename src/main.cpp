@@ -36,11 +36,10 @@ int main() {
   FusionEKF fusionEKF;
 
   // used to compute the RMSE later
-  Tools tools;
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&fusionEKF,&tools,&estimations,&ground_truth]
+  h.onMessage([ &fusionEKF, &estimations, &ground_truth ]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -115,10 +114,10 @@ int main() {
 
           VectorXd estimate(4);
 
-          double p_x = fusionEKF.ekf_.x_(0);
-          double p_y = fusionEKF.ekf_.x_(1);
-          double v1  = fusionEKF.ekf_.x_(2);
-          double v2 = fusionEKF.ekf_.x_(3);
+          double p_x = fusionEKF.ekf_.get_xi(0);
+          double p_y = fusionEKF.ekf_.get_xi(1);
+          double v1  = fusionEKF.ekf_.get_xi(2);
+          double v2 = fusionEKF.ekf_.get_xi(3);
 
           estimate(0) = p_x;
           estimate(1) = p_y;
@@ -127,7 +126,7 @@ int main() {
         
           estimations.push_back(estimate);
 
-          VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+          VectorXd RMSE = Tools::CalculateRMSE(estimations, ground_truth);
 
           json msgJson;
           msgJson["estimate_x"] = p_x;

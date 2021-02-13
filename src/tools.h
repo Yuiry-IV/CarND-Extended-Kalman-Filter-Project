@@ -4,18 +4,7 @@
 #include <vector>
 #include "Eigen/Dense"
 
-class Tools {
- public:
-  /**
-   * Constructor.
-   */
-  Tools();
-
-  /**
-   * Destructor.
-   */
-  virtual ~Tools();
-
+namespace Tools {
   /**
    * A helper method to calculate RMSE.
    */
