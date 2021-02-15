@@ -81,11 +81,20 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       cout << "phi: " << phi << endl;
       cout << "rho_dot: " << rho_dot << endl;
 
-      // Normalize phi to [-pi, pi]
+      /**
+       *      Suggestion
+       * Here there is no need for normalization. Mainly normalization is needed after each calculation.
+       * On the other hand, you are doing a protective algorithm to ensure all inputs are within the valid range. 
+       * Usually we expect the inputs to be correct.
+       * Normalize phi to [-pi, pi]
+       */
       while (phi > 2.0*M_PI)  phi -= 2.0 * M_PI;
       while (phi < -2.0*M_PI) phi += 2.0 * M_PI;
 
-      // Convert each coordinate
+      /**
+       * It is a great idea to use rho_dot for computing rough initial estimates for vx and vy! 
+       * Convert each coordinate
+       */
       double x  = rho * cos(phi);
       double y  = rho * sin(phi);
       double vx = rho_dot * cos(phi);

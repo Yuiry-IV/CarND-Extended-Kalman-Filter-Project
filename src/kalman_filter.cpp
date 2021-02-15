@@ -50,7 +50,14 @@ void KalmanFilter::UpdateEKF(const VectorXd &z,
   
   const double rho     = sqrt(px*px + py*py);
   const double theta   = atan2(py, px);
-  const double rho_dot =  (px*vx + py*vy) / rho;
+  
+  /**
+   * :seedling: Whenever there is division, it’s always a good idea to protect against division by zero. 
+   * There are several ways to perform this protection here is one:
+   * rho_dot = (px*vx + py*vy) / std::max(eps, rho); with some small eps. 
+   */
+  const eps = 1e-6;
+  const double rho_dot =  (px*vx + py*vy) / std::max(rho, eps);
  
   VectorXd h = VectorXd(3);
 
@@ -58,10 +65,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z,
 
   VectorXd y = z - h;
   
-  // Normalize theta to [-2pi, 2pi]
-  while (y(1) >  2.0*M_PI) y(1) -= 2.0 * M_PI;
-  while (y(1) < -2.0*M_PI) y(1) += 2.0 * M_PI;
-  
+  /**
+   * Normalize theta to [-2pi, 2pi]
+   * :seedling: There is a mathematical trick that you can use here: For an angle phi: Get the tan(-1)(tan(phi))
+   */
+   y(1) = atan2(sin(y(1)), cos(y(1)));
+   
   UpdateCommon(y,H_,R_);
 }
 
